@@ -1,24 +1,31 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.ordenamiento;
 
 public class Nodo {
-
-    char operador;
     int valor;
+    char operador;
     Nodo izquierdo, derecho;
 
-    public Nodo(char operador) {
-        this.operador = operador;
-        this.valor = -1; // Valor predeterminado para operadores
-        this.izquierdo = this.derecho = null;
+    // Constructor para valores numéricos
+    public Nodo(int valor) {
+        this.valor = valor;
+        this.operador = ' ';
+        this.izquierdo = null;
+        this.derecho = null;
     }
 
-    public Nodo(int valor) {
-        this.operador = ' ';
-        this.valor = valor;
-        this.izquierdo = this.derecho = null;
+    // Constructor para operadores
+    public Nodo(char operador) {
+        this.valor = 0;
+        this.operador = operador;
+        this.izquierdo = null;
+        this.derecho = null;
+    }
+
+    // Constructor para operadores con hijos
+    public Nodo(char operador, Nodo izquierdo, Nodo derecho) {
+        this.valor = 0;
+        this.operador = operador;
+        this.izquierdo = izquierdo;
+        this.derecho = derecho;
     }
 }

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
-
 package com.mycompany.ordenamiento;
 
 import java.util.HashMap;
@@ -11,16 +7,37 @@ import java.util.Stack;
 
 public class Ordenamiento {
 
-    // Método principal proyecto arboles
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Ingrese la expresion matematica con variables: ");
-        String expresion = scanner.nextLine();
+        Compilador compilador = new Compilador();
+        Automata automata = new Automata();
+
+        System.out.print("Ingrese el fragmento de código: ");
+        String fragmentoCodigo = scanner.nextLine();
+
+        // Verificar que el código empiece con '<' y termine con '>'
+        if (!fragmentoCodigo.startsWith("<") || !fragmentoCodigo.endsWith(">")) {
+            System.out.println("Error: El código debe empezar con '<' y terminar con '>'");
+            return;
+        }
+
+        // Remover los símbolos '<' y '>' para obtener solo la expresión matemática
+        String expresion = fragmentoCodigo.substring(1, fragmentoCodigo.length() - 1);
+
+        // Realizar análisis léxico
+        System.out.println("Realizando análisis léxico...");
+        compilador.analizar(expresion);
+        compilador.imprimirTokens();
+
+        // Analizar con el autómata
+        System.out.println("Analizando con el autómata...");
+        analizarConAutomata(expresion, automata);
 
         // Mapa para almacenar los valores de las variables
         Map<Character, Integer> variables = new HashMap<>();
+
+        // Pedir valores para las variables
         for (char c : expresion.toCharArray()) {
-            // Solicitar al usuario que ingrese el valor de cada variable encontrada en la expresion
             if (Character.isAlphabetic(c) && !variables.containsKey(c)) {
                 System.out.print("Ingrese el valor para " + c + ": ");
                 int valor = scanner.nextInt();
@@ -28,7 +45,7 @@ public class Ordenamiento {
             }
         }
 
-        // Mostrar la expresion matematica con los valores ingresados
+        // Mostrar la expresión matemática con los valores ingresados
         System.out.println("Expresion matematica con valores ingresados:");
         StringBuilder expresionConValores = new StringBuilder();
         for (char c : expresion.toCharArray()) {
@@ -40,39 +57,51 @@ public class Ordenamiento {
         }
         System.out.println(expresionConValores.toString());
 
-        // Evaluar la expresion y mostrar el resultado
+        // Evaluar la expresión y mostrar el resultado
         int resultado = evaluar(expresion, variables);
         System.out.println("El resultado de la expresion es: " + resultado);
 
-        // Crear el arbol de expresiones y mostrar el recorrido postorden
-        Arbol arbol = new Arbol();
-        arbol.raiz = construirArbol(expresion, variables);
-        System.out.println("Recorrido postorden del arbol de expresiones:");
-        arbol.recorrerPostorden();
-
-        // Mostrar el recorrido en notacion polaca del arbol de expresiones
-        System.out.println("\nRecorrido en notacion polaca del arbol de expresiones:");
-        arbol.recorrerPolaca();
-
-        // Imprimir el árbol
-        System.out.println("\nArbol de expresiones:");
-        arbol.imprimirArbol();
-
-       
         scanner.close();
     }
 
-    // Método para evaluar la expresion matematica y calcular su resultado
+    // Método para analizar el fragmento de código con el autómata
+    public static void analizarConAutomata(String expresion, Automata automata) {
+        for (char c : expresion.toCharArray()) {
+            Automata.Simbolo simbolo;
+            if (Character.isAlphabetic(c)) {
+                simbolo = Automata.Simbolo.VARIABLE;
+            } else if (c == '=') {
+                simbolo = Automata.Simbolo.ASIGNACION;
+            } else if (c == '+' || c == '-' || c == '*' || c == '/') {
+                simbolo = Automata.Simbolo.OPERADOR;
+            } else if (Character.isDigit(c)) {
+                simbolo = Automata.Simbolo.NUMERO;
+            } else if (c == '(' || c == ')') {
+                simbolo = Automata.Simbolo.PARENTESIS;
+            } else {
+                simbolo = Automata.Simbolo.DESCONOCIDO;
+            }
+            automata.procesarSimbolo(simbolo);
+        }
+
+        if (automata.esEstadoFinal()) {
+            System.out.println("El código es aceptado por el autómata.");
+        } else {
+            System.out.println("El código no es aceptado por el autómata.");
+        }
+    }
+
+    // Método para evaluar la expresión matemática y calcular su resultado
     public static int evaluar(String expresion, Map<Character, Integer> variables) {
-        // Construir el arbol de expresiones
+        // Construir el árbol de expresiones
         Arbol arbol = new Arbol();
         arbol.raiz = construirArbol(expresion, variables);
 
-        // Evaluar el arbol de expresiones
+        // Evaluar el árbol de expresiones
         return evaluarArbol(arbol.raiz);
     }
 
-    // Método para evaluar el arbol de expresiones recursivamente
+    // Método para evaluar el árbol de expresiones recursivamente
     public static int evaluarArbol(Nodo raiz) {
         if (raiz == null) {
             return 0;
@@ -103,7 +132,7 @@ public class Ordenamiento {
         }
     }
 
-    // Método para construir el arbol de expresiones
+    // Método para construir el árbol de expresiones
     public static Nodo construirArbol(String expresion, Map<Character, Integer> variables) {
         char[] chars = expresion.toCharArray();
 
@@ -150,13 +179,6 @@ public class Ordenamiento {
                 unario = esUnario; // Actualizar la bandera de operador unario
             } else if (Character.isAlphabetic(chars[i])) {
                 // Si es una variable, obtener su valor y agregarlo a la pila de expresiones
-                if (!variables.containsKey(chars[i])) {
-                    System.out.print("Ingrese el valor para " + chars[i] + ": ");
-                    Scanner scanner = new Scanner(System.in);
-                    int valor = scanner.nextInt();
-                    scanner.close();
-                    variables.put(chars[i], valor);
-                }
                 int valor = variables.get(chars[i]);
                 Nodo variable = new Nodo(valor);
                 stackExpresion.push(variable);
@@ -169,11 +191,11 @@ public class Ordenamiento {
             procesarOperador(stackOperadores.pop(), stackExpresion);
         }
 
-        // El resultado final estara en la raíz del arbol de expresiones
+        // El resultado final estará en la raíz del árbol de expresiones
         return stackExpresion.pop();
     }
 
-    // Método para procesar operadores y construir el arbol de expresiones
+    // Método para procesar operadores y construir el árbol de expresiones
     public static void procesarOperador(char operador, Stack<Nodo> stackExpresion) {
         Nodo derecho = stackExpresion.pop();
         Nodo izquierdo = stackExpresion.pop();
