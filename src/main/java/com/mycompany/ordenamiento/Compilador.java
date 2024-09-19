@@ -80,18 +80,5 @@ public class Compilador {
         return matcher.matches();
     }
 
-    public static void main(String[] args) {
-        Compilador compilador = new Compilador();
-        String codigo = "x = 10 + y * (z - 2)";
-
-        System.out.println("Analizando código: " + codigo);
-        compilador.analizar(codigo);
-        compilador.imprimirTokens();
-
-        // Verificar si una cadena es aceptada por el lenguaje
-        String cadena = "variable123";
-        System.out.println("\n¿La cadena '" + cadena + "' es aceptada? " +
-                compilador.esCadenaAceptada(cadena));
-    }
 }
 

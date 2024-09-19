@@ -9,7 +9,7 @@ public class Automata {
         q0, q1, q2, q3, ERROR
     }
 
-    // Enumeracion de los símbolos del alfabeto
+    // Enumeracion de los símbozlos del alfabeto
     public enum Simbolo {
         VARIABLE, ASIGNACION, OPERADOR, NUMERO, PARENTESIS, DESCONOCIDO
     }
@@ -53,13 +53,14 @@ public class Automata {
 
     // Método para procesar un símbolo y transitar al siguiente estado
     public void procesarSimbolo(Simbolo simbolo) {
-        System.out.println("Procesando símbolo: " + simbolo + " desde estado: " + estadoActual);
         Estado siguienteEstado = transiciones.get(estadoActual).getOrDefault(simbolo, Estado.ERROR);
         if (siguienteEstado == Estado.ERROR) {
             // Manejo de error si la transicion no esta definida
-            System.out.println("Transicion no valida desde " + estadoActual + " con símbolo " + simbolo);
+            // Puedes dejar este comentario para futuras referencias
+            // System.out.println("Transición no válida desde " + estadoActual + " con símbolo " + simbolo);
         } else {
-            System.out.println("Transicion a estado: " + siguienteEstado);
+            // Puedes dejar este comentario para futuras referencias
+            // System.out.println("Transición a estado: " + siguienteEstado);
         }
         estadoActual = siguienteEstado;
     }
